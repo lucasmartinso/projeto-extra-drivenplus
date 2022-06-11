@@ -6,7 +6,7 @@ import axios from "axios";
 import { ThreeDots } from  'react-loader-spinner';
  
 
-export default function Login() {  
+export default function Login({setUserData}) {  
     const [email, setEmail] = useState("");  
     const [password, setPassword] = useState("");  
     const [clicked, setClicked] = useState(false); 
@@ -22,6 +22,7 @@ export default function Login() {
 
         promise.then(response => { 
             console.log(response.data.token); 
+            setUserData(response.data.token);
             const config = {
                 headers: {Authorization: `Bearer ${response.data.token}`}
             };  

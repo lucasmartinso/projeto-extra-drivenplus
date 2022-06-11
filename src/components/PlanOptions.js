@@ -1,25 +1,46 @@
 import axios from "axios";
 import { useState } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components"; 
+import Plan from "./Plan";
 
-export default function PlanOptions() { 
+export default function PlanOptions({userData}){ 
+    const [planData, setPlanData] = useState([]); 
+
+    const navigate = useNavigate();
+    
+    useEffect(() => { 
+        const config = { 
+            headers: {Authorization: `Bearer ${userData}`}
+        }; 
+
+        const promise = axios.get("https://mock-api.driven.com.br/api/v4/driven-plus/subscriptions/memberships",config);  
+
+        promise.then(response => { 
+            console.log(response.data); 
+            setPlanData(response.data);
+        }); 
+
+        promise.catch(err => { 
+            alert("Erro de indentificação do usuário!!\nFaça o Login Novamente!"); 
+            console.log(err.response.status);
+            navigate("/"); 
+        });
+    }, []);
+
     return( 
         <> 
         <Titulo>Escolha seu Plano</Titulo> 
 
-        <Planos>
-            <Plano>
-                <img src="images/Group 1.png"/>  
-                <h2>R$39,99</h2>  
-            </Plano>  
-            <Plano>
-                <img src="images/Group 1.png"/>  
-                <h2>R$39,99</h2>  
-            </Plano>  
-            <Plano>
-                <img src="images/Group 1.png"/>  
-                <h2>R$39,99</h2>  
-            </Plano> 
+        <Planos> 
+        {planData.map(plano => 
+            <Plan
+                image = {plano.image} 
+                price = {plano.price} 
+                id = {plano.id}
+            />  
+        )};
         </Planos> 
         </>
     )
@@ -44,29 +65,4 @@ const Planos = styled.div`
     display: flex; 
     align-items: center; 
     flex-direction: column; 
-
 ` 
-const Plano = styled.div`
-    width: 290px; 
-    height: 180px; 
-    border: 3px solid rgba(126, 126, 126, 1); 
-    border-radius: 12px; 
-    padding: 16px;42px;  
-    color: rgba(255, 255, 255, 1); 
-    display: flex;  
-    align-items: center; 
-    margin-bottom: 10px;
-
-    &:hover {
-        cursor: pointer; 
-    } 
-
-    img{ 
-        margin-right: 21px; 
-    } 
-
-    h2{ 
-        font-size: 24px; 
-        font-weight: bold; 
-    }
-`
